@@ -287,6 +287,7 @@ class App():
         def on_close():
             # Bỏ highlight tag khi mà cửa sổ tìm kiếm đóng
             self.textbox.tag_remove("find", "1.0", "end")
+            self.textbox.tag_remove("replace", "1.0", "end")
             find_window.destroy()
 
         find_button = ttk.Button(find_window, text="Find", command=find_next)
@@ -329,6 +330,7 @@ class App():
 
                 else:
                     mbox.showinfo("Tổng số từ", f"Tìm thấy {count_replace} từ khớp với '{pattern}'")
+                    self.textbox.tag_remove("replace", "1.0", "end")
                     
         replace_button = ttk.Button(find_window, text="Replace", command=replace_next)
         replace_button.pack(side="bottom")
