@@ -201,13 +201,16 @@ class App():
     def find_text(self):
         def bind_enter(event):
             find_next()
+        
+        def bind_enter_replace(event):
+            replace_next()
 
         # Create a new Toplevel window for the find dialog
         find_window = tk.Toplevel(self.master)
         find_window.title("Find Text")
 
         # Set the size of the find window
-        find_window.geometry("350x80+950+280")
+        find_window.geometry("350x150+950+280")
 
         # Label and entry for entering the regex pattern to find
         find_label = ttk.Label(find_window, text="Enter regular expression pattern:")
@@ -216,11 +219,23 @@ class App():
         find_entry.pack(side="top")
         find_entry.configure(width=50)
         find_entry.bind("<Return>", bind_enter)
+        
+        #Label and entry for replace
+        
+        replace_label = ttk.Label(find_window, text="Enter replacement:")
+        replace_label.pack()
+        replace_entry = ttk.Entry(find_window)
+        replace_entry.pack(side="top")
+        replace_entry.configure(width=50)
+        replace_entry.bind("<Return>", bind_enter_replace)
+        
         # Keep track of the end position of the previous match
         last_match_end = "1.0"
         
         # Đếm số lượng từ tìm thấy
         count_word_founded = 0
+        
+        count_replace = 0
 
         # Định nghĩa một hàm có tên là find_next với đối số tùy chọn là event
         def find_next(event=None):
@@ -228,10 +243,11 @@ class App():
             nonlocal last_match_end
             # Lấy mẫu regex từ đầu vào 
             pattern = find_entry.get()
+            
             nonlocal count_word_founded
             if pattern:
                 try:
-                    # Biên dịch mẫu regex với cờ không phân biệt chữ hoa và thường
+                    # Biên dịch mẫu regex, có phân biệt chữ hoa và thường
                     regex = re.compile(pattern)
                     # Tìm kiếm lần xuất hiện tiếp theo bắt đầu từ cuối của lần xuất hiện trước đó
                     match = regex.search(self.textbox.get(last_match_end, "end"))
@@ -263,23 +279,65 @@ class App():
                         last_match_end = "1.0"
                         # Hiển thị hộp thoại thông báo không tìm thấy kết quả nào khác
                         mbox.showinfo("Tổng số từ", f"Tìm thấy {count_word_founded} từ khớp với '{pattern}'")
-
                         # Xóa bỏ các thẻ 'find' trước đó (nếu có)
                         self.textbox.tag_remove("find", "1.0", "end")
                 except re.error:
                     # Hiển thị hộp thoại thông báo lỗi cho mẫu regex không hợp lệ
                     mbox.showerror("Mẫu không hợp lệ", "Mẫu biểu thức chính quy không hợp lệ")
         def on_close():
-            # Remove the highlight tags when the find window is closed
+            # Bỏ highlight tag khi mà cửa sổ tìm kiếm đóng
             self.textbox.tag_remove("find", "1.0", "end")
             find_window.destroy()
 
         find_button = ttk.Button(find_window, text="Find", command=find_next)
         find_button.pack(side="bottom")
         find_button.config(width=15, padding=3)
+        
+        def replace_next():
+            nonlocal last_match_end
+            pattern = find_entry.get()
+            replacement = replace_entry.get()
+            nonlocal count_replace
+            
+            if pattern and replacement:
+                # Compile the regex pattern
+                regex = re.compile(pattern)
+
+                # Search for the next occurrence of the regex pattern
+                match = regex.search(self.textbox.get(last_match_end, "end"))
+                
+                if match:
+                    count_replace += 1
+                    # Get the start and end indices of the match
+                    start, end = match.start(), match.end()
+                    start_index = f"{last_match_end}+{start}c"
+                    end_index = f"{last_match_end}+{end}c"
+                    
+                    # Perform the replacement using the sub function
+                    replaced_text = regex.sub(replacement, self.textbox.get(last_match_end, "end"), count=1)
+
+                    # Update the text in the textbox
+                    self.textbox.delete(last_match_end, "end")
+                    self.textbox.insert(last_match_end, replaced_text)
+
+                    # Highlight the replaced text
+                    self.textbox.tag_add("replace", start_index, end_index)
+                    self.textbox.tag_configure("replace", background="light green")
+
+                    # Update last_match_end to the end of the replaced text
+                    last_match_end = end_index
+
+                else:
+                    mbox.showinfo("Tổng số từ", f"Tìm thấy {count_replace} từ khớp với '{pattern}'")
+                    
+        replace_button = ttk.Button(find_window, text="Replace", command=replace_next)
+        replace_button.pack(side="bottom")
+        replace_button.config(width=15, padding=3)
 
         # Close the find window when the main window is closed
         find_window.protocol("WM_DELETE_WINDOW", on_close)
+        
+    
 
 
 def main():
