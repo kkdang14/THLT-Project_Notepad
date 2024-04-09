@@ -218,15 +218,17 @@ class App():
         find_entry.bind("<Return>", bind_enter)
         # Keep track of the end position of the previous match
         last_match_end = "1.0"
+        
+        # Đếm số lượng từ tìm thấy
+        count_word_founded = 0
 
         # Định nghĩa một hàm có tên là find_next với đối số tùy chọn là event
         def find_next(event=None):
             # Khai báo last_match_end là biến không cục bộ
             nonlocal last_match_end
-            # Lấy mẫu regex từ đầu vào (giả sử được lưu trữ trong find_entry)
+            # Lấy mẫu regex từ đầu vào 
             pattern = find_entry.get()
-            # Kiểm tra xem mẫu có khác rỗng không
-            count_word_founded = 0
+            nonlocal count_word_founded
             if pattern:
                 try:
                     # Biên dịch mẫu regex với cờ không phân biệt chữ hoa và thường
@@ -235,7 +237,7 @@ class App():
                     match = regex.search(self.textbox.get(last_match_end, "end"))
                     # Nếu tìm thấy kết quả
                     if match:
-                        count_word_founded += 1
+                        count_word_founded+=1
                         # Lấy chỉ số bắt đầu và kết thúc của kết quả
                         start, end = match.start(), match.end()
                         # Tính toán chỉ số bắt đầu và kết thúc trong textbox
@@ -255,11 +257,10 @@ class App():
 
                         # Cập nhật last_match_end đến cuối của kết quả hiện tại
                         last_match_end = end_index
-
+            
                     else:
                         # Nếu không tìm thấy kết quả nào khác, bắt đầu tìm kiếm từ đầu
                         last_match_end = "1.0"
-
                         # Hiển thị hộp thoại thông báo không tìm thấy kết quả nào khác
                         mbox.showinfo("Tổng số từ", f"Tìm thấy {count_word_founded} từ khớp với '{pattern}'")
 
