@@ -74,14 +74,13 @@ class App():
         if self.autosave_var.get():
             self.statusbar.print(f'AUTOSAVE: ON ({int(self.autosave_interval) / 1000}s)')
         self.textbox.focus()
-        # last because of the render issue
+    
         self.master.iconbitmap(self.icon_path)
     
     def new_file(self):
         self.autosave(stop=True)
         if self.save_changes_answer() is None:
             return
-        
         self.opened_file = None
         self.master.title(f'{NEW_FILE_NAME} - {APP_NAME}')
         self.textbox.delete(1.0, 'end')
@@ -234,7 +233,7 @@ class App():
         
         # Đếm số lượng từ tìm thấy
         count_word_founded = 0
-        
+        # Đếm số lượng thay thế
         count_replace = 0
 
         # Định nghĩa một hàm có tên là find_next với đối số tùy chọn là event
@@ -339,9 +338,6 @@ class App():
         # Close the find window when the main window is closed
         find_window.protocol("WM_DELETE_WINDOW", on_close)
         
-    
-
-
 def main():
     root = tk.Tk()
     App(root)
