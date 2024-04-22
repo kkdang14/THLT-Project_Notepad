@@ -147,7 +147,7 @@ class App():
             '<Ctrl-Minus> - Reduce text font', '', '<F1> - View shortcuts'
         ]
         mbox.showinfo('Shortcut List', '\n'.join(lst))
-
+    
     def change_autosave(self):
         state = self.autosave_var.get()
         self.autosave(stop=not state)
@@ -199,7 +199,7 @@ class App():
         
     def find_text(self):
         def bind_enter(event):
-            find_next()
+            find()
         
         def bind_enter_replace(event):
             replace_next()
@@ -237,12 +237,11 @@ class App():
         count_replace = 0
 
         # Định nghĩa một hàm có tên là find_next với đối số tùy chọn là event
-        def find_next(event=None):
+        def find(event=None):
             # Khai báo last_match_end là biến không cục bộ
             nonlocal last_match_end
             # Lấy mẫu regex từ đầu vào 
             pattern = find_entry.get()
-            
             nonlocal count_word_founded
             if pattern:
                 try:
@@ -280,6 +279,8 @@ class App():
                         mbox.showinfo("Tổng số từ", f"Tìm thấy {count_word_founded} từ khớp với '{pattern}'")
                         # Xóa bỏ các thẻ 'find' trước đó (nếu có)
                         self.textbox.tag_remove("find", "1.0", "end")
+
+                        count_word_founded = 0
                 except re.error:
                     # Hiển thị hộp thoại thông báo lỗi cho mẫu regex không hợp lệ
                     mbox.showerror("Mẫu không hợp lệ", "Mẫu biểu thức chính quy không hợp lệ")
@@ -289,8 +290,8 @@ class App():
             self.textbox.tag_remove("replace", "1.0", "end")
             find_window.destroy()
 
-        find_button = ttk.Button(find_window, text="Find", command=find_next)
-        find_button.pack(side="bottom")
+        find_button = ttk.Button(find_window, text="Find", command=find)
+        find_button.pack(side="top")
         find_button.config(width=15, padding=3)
         
         def replace_next():
@@ -322,7 +323,7 @@ class App():
 
                     # Highlight the replaced text
                     self.textbox.tag_add("replace", start_index, end_index)
-                    self.textbox.tag_configure("replace", background="light green")
+                    self.textbox.tag_configure("replace", background="light blue")
 
                     # Update last_match_end to the end of the replaced text
                     last_match_end = end_index
@@ -330,8 +331,9 @@ class App():
                 else:
                     mbox.showinfo("Tổng số từ", f"Tìm thấy {count_replace} từ khớp với '{pattern}'")
                     self.textbox.tag_remove("replace", "1.0", "end")
+                    count_replace = 0
                     
-        replace_button = ttk.Button(find_window, text="Replace", command=replace_next)
+        replace_button = ttk.Button(find_window, text="Find and Replace", command=replace_next)
         replace_button.pack(side="bottom")
         replace_button.config(width=15, padding=3)
 

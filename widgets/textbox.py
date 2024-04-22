@@ -105,3 +105,4 @@ class Textbox(Text):
     def tag_add(self, tagName, index1, *args):
         self.tk.call(
             (self._w, 'tag', 'add', tagName, index1) + args)
+        
