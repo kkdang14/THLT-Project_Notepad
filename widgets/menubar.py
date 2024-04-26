@@ -21,7 +21,6 @@ class Menubar():
         file_menu.add_command(label="Open...", command=app.open_file, accelerator='(Ctrl+O)')
         file_menu.add_command(label="Save", command=app.save_file, accelerator='(Ctrl+S)')
         file_menu.add_command(label="Save As", command=app.save_file_as, accelerator='(Ctrl+Shift+S)')
-        file_menu.add_command(label="Find", command=app.find_text, accelerator='(Ctrl+F)')
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=app.on_close)
 

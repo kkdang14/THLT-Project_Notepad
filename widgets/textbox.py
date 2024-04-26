@@ -79,7 +79,7 @@ class Textbox(Text):
         if self.cget('wrap') == 'word': # Nếu chế độ wrap là 'word'
             self.config(wrap='none') # Chuyển sang chế độ 'none'
             self.app.statusbar.print('WRAP: NONE') # In thông báo trạng thái
-            # Thêm thanh cuộn ngang
+            # Thêm thanh vị trí cuộn ngang
             self.h_scrollbar.pack(side='bottom', fill='x')
         else:
             self.config(wrap='word') # Nếu chế độ wrap không phải là 'word', chuyển sang chế độ 'word'
@@ -90,12 +90,6 @@ class Textbox(Text):
     # Phương thức cập nhật font
     def update_font(self):
         self.config(font=(self.font_family, self.font_size, self.font_weight, self.font_slant))
-    
-    # Phương thức thay đổi kích thước font
-    def change_size(self, by_num):
-        self.font_size = str(int(self.font_size) + by_num) # Tăng/giảm kích thước font
-        self.update_font() # Cập nhật font
-        self.app.config_data.set('Font', 'size', self.font_size) # Lưu cài đặt kích thước font
         
     # Phương thức cấu hình thẻ
     def tag_configure(self, tagName, cnf=None, **kw):
